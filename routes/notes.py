@@ -137,7 +137,22 @@ def update_note(note_id):
 
     return jsonify(note_schema.dump(note)), 200
 
+@notes_bp.route("/notes/<int:note_id>", methods=["DELETE"])
+def delete_note(note_id):
+    user_id = get_logged_in_user_id()
 
+    if not user_id:
+        return jsonify({"error": "Please log in first"}), 401
+
+    note = Note.query.filter_by(id=note_id, user_id=user_id).first()
+
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    db.session.delete(note)
+    db.session.commit()
+
+    return jsonify({}), 200
 
 
 

@@ -10,6 +10,9 @@ note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)
 note_input_schema = NoteInputSchema()
 
+def get_logged_in_user_id():
+    return session.get("user_id")
+
 
 
 

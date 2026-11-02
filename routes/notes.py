@@ -4,7 +4,11 @@ from marshmallow import ValidationError
 from models import db, Note, Category
 from serializers import NoteSchema, NoteInputSchema
 
+notes_bp = Blueprint("notes", __name__)
 
+note_schema = NoteSchema()
+notes_schema = NoteSchema(many=True)
+note_input_schema = NoteInputSchema()
 
 
 

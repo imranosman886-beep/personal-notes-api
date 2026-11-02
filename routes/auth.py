@@ -1,5 +1,3 @@
-from flask import Blueprint, request, jsonify, session
-from marshmallow import ValidationError
 
 from models import db, User
 from serializers import SignupSchema, LoginSchema

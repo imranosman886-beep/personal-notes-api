@@ -99,6 +99,46 @@ def create_note():
 
     return jsonify(note_schema.dump(note)), 201
 
+@notes_bp.route("/notes/<int:note_id>", methods=["PATCH"])
+def update_note(note_id):
+    user_id = get_logged_in_user_id()
+
+    if not user_id:
+        return jsonify({"error": "Please log in first"}), 401
+
+    note = Note.query.filter_by(id=note_id, user_id=user_id).first()
+
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict) or not data:
+        return jsonify({"error": "A JSON object with at least one field is required"}), 400
+
+    try:
+        note_data = note_input_schema.load(data, partial=True)
+    except ValidationError as error:
+        return jsonify({"errors": error.messages}), 400
+
+    if "category_id" in note_data and note_data["category_id"] is not None:
+        category = Category.query.filter_by(
+            id=note_data["category_id"],
+            user_id=user_id
+        ).first()
+
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
+
+    for field, value in note_data.items():
+        setattr(note, field, value)
+
+    db.session.commit()
+
+    return jsonify(note_schema.dump(note)), 200
+
+
+
 
 
 
